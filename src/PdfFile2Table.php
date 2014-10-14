@@ -2,8 +2,6 @@
 
 namespace Maximethebault\Pdf2Table;
 
-//require __DIR__ . '../vendor/autoload.php';
-
 use Maximethebault\Pdf2Table\XmlElements\Pages;
 use Maximethebault\XmlParser\XmlFileParser;
 use Maximethebault\XmlParser\XmlParserConfig;
@@ -21,6 +19,12 @@ class PdfFile2Table
      * @var string
      */
     private $_filePath;
+    /**
+     * Array of the PDF pages
+     *
+     * @var PdfPage[]
+     */
+    private $_pages;
 
     public function __construct($filePath) {
         $this->_filePath = $filePath;
@@ -34,9 +38,30 @@ class PdfFile2Table
         exec('pdf2txt.py -o ' . $xmlUniqueName . ' ' . $this->_filePath);
         $xmlConfig = new XmlParserConfig();
         $xmlConfig->addXmlElementFolder('XmlElements/', 'Maximethebault\Pdf2Table\XmlElements');
-        $xmlFileParser = new XmlFileParser($this->_filePath, $xmlConfig, new Pages());
+        $xmlFileParser = new XmlFileParser($xmlUniqueName, $xmlConfig, new Pages());
         $xmlRes = $xmlFileParser->parseFile();
+        $this->registerPages($xmlRes);
         unlink($xmlUniqueName);
-        return $xmlRes;
+        return $this;
+    }
+
+    /**
+     * Gets the array of PDF pages
+     *
+     * @return PdfPage[]
+     */
+    public function getPages() {
+        return $this->_pages;
+    }
+
+    /**
+     * Puts the pages found in the XML tree into the internal array
+     *
+     * @param $xmlRes \Maximethebault\XmlParser\XmlElement
+     */
+    private function registerPages($xmlRes) {
+        foreach($xmlRes->page as $page) {
+            $this->_pages[] = new PdfPage($page);
+        }
     }
 }

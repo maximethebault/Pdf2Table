@@ -4,14 +4,14 @@ namespace Maximethebault\Pdf2Table\XmlElements;
 
 use Maximethebault\XmlParser\XmlElement;
 
-class Textbox extends XmlElement
+class Figure extends XmlElement
 {
-    public $children = array('textline' => array('multi' => true, 'class' => 'Maximethebault\Pdf2Table\XmlElements\Textline'));
+    public $children = array('image' => array('class' => 'Maximethebault\Pdf2Table\XmlElements\Image'));
 
     /**
      * @return string this element's tag name
      */
     public function getName() {
-        return 'textbox';
+        return 'figure';
     }
 }

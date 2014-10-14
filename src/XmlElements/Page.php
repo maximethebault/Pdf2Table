@@ -6,7 +6,7 @@ use Maximethebault\XmlParser\XmlElement;
 
 class Page extends XmlElement
 {
-    public $children = array('textbox' => array('multi' => true, 'ache_attr' => 'id', 'class' => 'Maximethebault\Pdf2Table\XmlElements\Textbox'),
+    public $children = array('textbox' => array('multi' => true, 'cache_attr' => 'id', 'class' => 'Maximethebault\Pdf2Table\XmlElements\Textbox'),
                              'figure'  => array('multi' => true, 'class' => 'Maximethebault\Pdf2Table\XmlElements\Figure'),
                              'rect'    => array('multi' => true, 'class' => 'Maximethebault\Pdf2Table\XmlElements\Rect'),
                              'layout'  => array('class' => 'Maximethebault\Pdf2Table\XmlElements\Layout'));
