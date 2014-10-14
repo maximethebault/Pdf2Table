@@ -2,8 +2,24 @@
 
 namespace Maximethebault\Pdf2Table;
 
-abstract class Line extends Border
+abstract class Line
 {
+    /**
+     * Borders of the line
+     *
+     * @var Border
+     */
+    protected $_border;
+
+    /**
+     * Constructs a line from a border
+     *
+     * @param $border Border the borders of the line
+     */
+    public function __construct($border) {
+        $this->_border = $border;
+    }
+
     /**
      * Glue two lines together, if they're close enough
      *

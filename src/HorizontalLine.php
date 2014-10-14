@@ -13,20 +13,20 @@ class HorizontalLine extends Line
      * @return float the distance between the lines, 0 if one starts after the other ends
      */
     protected function distance($line) {
-        if($this->getXStart() > $line->getXStart()) {
-            if($this->getXStart() < $line->getXEnd()) {
+        if($this->_border->getXStart() > $line->_border->getXStart()) {
+            if($this->_border->getXStart() < $line->_border->getXEnd()) {
                 return 0;
             }
             else {
-                return $this->getXStart() - $line->getXEnd();
+                return $this->_border->getXStart() - $line->_border->getXEnd();
             }
         }
         else {
-            if($line->getXStart() < $this->getXEnd()) {
+            if($line->_border->getXStart() < $this->_border->getXEnd()) {
                 return 0;
             }
             else {
-                return $line->getXStart() - $this->getXEnd();
+                return $line->_border->getXStart() - $this->_border->getXEnd();
             }
         }
     }
