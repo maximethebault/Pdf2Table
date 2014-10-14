@@ -32,10 +32,12 @@ class HorizontalLine extends Line
     }
 
     /**
-     * Merges two lines
+     * Merges two lines, and stores the resulting line in $this
      *
      * @param $line HorizontalLine
      */
     protected function merge($line) {
+        $this->_xStart = min($this->_xStart, $line->_xStart);
+        $this->_xEnd = max($this->_xEnd, $line->_xEnd);
     }
 }
