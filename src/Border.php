@@ -4,7 +4,7 @@ namespace Maximethebault\Pdf2Table;
 
 use Maximethebault\Pdf2Table\Exception\MissingDimensionException;
 
-class Dimension
+class Border
 {
     /**
      * Coordinates for the dimensions
@@ -14,8 +14,8 @@ class Dimension
     private $_xStart, $_yStart, $_xEnd, $_yEnd;
 
     /**
-     * @param $str           string the string we're building the Dimension object from
-     * @param $pageDimension Dimension necessary to convert the PDF coordinates (which lives in a frame where 0,0 is the bottom left corner) into a frame adpadted to PHP's GD library (0,0 is top left corner)
+     * @param $str           string the string we're building the Border object from
+     * @param $pageDimension Border necessary to convert the PDF coordinates (which lives in a frame where 0,0 is the bottom left corner) into a frame adpadted to PHP's GD library (0,0 is top left corner)
      *
      * @throws Exception\MissingDimensionException
      */
@@ -85,7 +85,7 @@ class Dimension
     }
 
     /**
-     * Returns true if the current Dimension is representative of an horizontal object
+     * Returns true if the current Border is representative of an horizontal object
      *
      * @return bool
      */
@@ -94,7 +94,7 @@ class Dimension
     }
 
     /**
-     * Returns true if the current Dimension is representative of a vertical object
+     * Returns true if the current Border is representative of a vertical object
      *
      * @return bool
      */
