@@ -34,6 +34,13 @@ class PdfPage
         $this->_verticalLines[] = array();
     }
 
+    public function buildTable() {
+        $this->getLines();
+        $this->extendLines($this->_horizontalLines);
+        $this->extendLines($this->_verticalLines);
+        $table = new Table($this->_horizontalLines, $this->_verticalLines);
+    }
+
     /**
      * ** For debug purpose mainly **
      *
@@ -62,13 +69,12 @@ class PdfPage
             if(!$border) {
                 continue;
             }
-            $line = new LineHorizontal($border);
-            // TODO: redesigning everything
-            if($line->isHorizontal()) {
-                $this->_horizontalLines[] = $line;
+            $border = new Border($border);
+            if($border->isHorizontal()) {
+                $this->_horizontalLines[] = new HorizontalLine($border);
             }
-            else if($line->isVertical()) {
-                $this->_verticalLines[] = $line;
+            else if($border->isVertical()) {
+                $this->_verticalLines[] = new VerticalLine($border);
             }
         }
     }
@@ -78,7 +84,7 @@ class PdfPage
      *
      * @param $lineSet Line[] an array of lines
      */
-    private function extendLines($lineSet) {
+    private function extendLines(&$lineSet) {
         do {
             $lineCount = count($lineSet);
             for($i = 0; $i < count($lineSet); $i++) {
@@ -94,6 +100,9 @@ class PdfPage
                 }
             }
         } while($lineCount != count($lineSet));
+        // when we unset an element off an array, key still exists and returns null.
+        // we need to clean up this mess
+        $lineSet = array_values($lineSet);
     }
 
     /**

@@ -4,6 +4,12 @@ namespace Maximethebault\Pdf2Table\XmlElements;
 
 use Maximethebault\XmlParser\XmlElement;
 
+/**
+ * @property XmlElement[] textbox
+ * @property XmlElement[] figure
+ * @property XmlElement[] rect
+ * @property XmlElement   layout
+ */
 class Page extends XmlElement
 {
     public $children = array('textbox' => array('multi' => true, 'cache_attr' => 'id', 'class' => 'Maximethebault\Pdf2Table\XmlElements\Textbox'),

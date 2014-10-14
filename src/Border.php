@@ -101,4 +101,32 @@ class Border
     public function isVertical() {
         return ($this->getWidth() < 2);
     }
+
+    /**
+     * @param float $xStart
+     */
+    public function setXStart($xStart) {
+        $this->_xStart = $xStart;
+    }
+
+    /**
+     * @param float $yStart
+     */
+    public function setYStart($yStart) {
+        $this->_yStart = $yStart;
+    }
+
+    /**
+     * @param float $xEnd
+     */
+    public function setXEnd($xEnd) {
+        $this->_xEnd = $xEnd;
+    }
+
+    /**
+     * @param float $yEnd
+     */
+    public function setYEnd($yEnd) {
+        $this->_yEnd = $yEnd;
+    }
 }

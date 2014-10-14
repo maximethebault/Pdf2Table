@@ -4,6 +4,9 @@ namespace Maximethebault\Pdf2Table\XmlElements;
 
 use Maximethebault\XmlParser\XmlElement;
 
+/**
+ * @property XmlElement   image
+ */
 class Figure extends XmlElement
 {
     public $children = array('image' => array('class' => 'Maximethebault\Pdf2Table\XmlElements\Image'));

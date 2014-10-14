@@ -4,6 +4,10 @@ namespace Maximethebault\Pdf2Table\XmlElements;
 
 use Maximethebault\XmlParser\XmlElement;
 
+/**
+ * @property XmlElement[] textgroup
+ * @property XmlElement[] textbox
+ */
 class Textgroup extends XmlElement
 {
     public $children = array('textgroup' => array('multi' => true, 'class' => 'Maximethebault\Pdf2Table\XmlElements\Textgroup'),
