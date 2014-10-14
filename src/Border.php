@@ -11,7 +11,7 @@ class Border
      *
      * @var float
      */
-    private $_xStart, $_yStart, $_xEnd, $_yEnd;
+    protected $_xStart, $_yStart, $_xEnd, $_yEnd;
 
     /**
      * @param $str           string the string we're building the Border object from

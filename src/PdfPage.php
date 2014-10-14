@@ -62,7 +62,8 @@ class PdfPage
             if(!$border) {
                 continue;
             }
-            $line = new Line($border);
+            $line = new LineHorizontal($border);
+            // TODO: redesigning everything
             if($line->isHorizontal()) {
                 $this->_horizontalLines[] = $line;
             }
@@ -72,10 +73,26 @@ class PdfPage
         }
     }
 
+    /**
+     * Extends a set of lines, i.e. it merges lines which should be considered as one
+     *
+     * @param $lineSet Line[] an array of lines
+     */
     private function extendLines($lineSet) {
-
         do {
             $lineCount = count($lineSet);
+            for($i = 0; $i < count($lineSet); $i++) {
+                $line1 = $lineSet[$i];
+                for($j = 0; $j < count($lineSet); $j++) {
+                    $line2 = $lineSet[$j];
+                    if(!$line1 || !$line2) {
+                        continue;
+                    }
+                    if($line1->glue($line2)) {
+                        unset($lineSet[$j]);
+                    }
+                }
+            }
         } while($lineCount != count($lineSet));
     }
 
