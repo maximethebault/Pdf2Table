@@ -33,4 +33,11 @@ class HorizontalLine extends Line
         $this->_border->setXStart(min($this->_border->getXStart(), $line->_border->getXStart()));
         $this->_border->setXEnd(max($this->_border->getXEnd(), $line->_border->getXEnd()));
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSortValue() {
+        return min($this->_border->getYStart(), $this->_border->getYEnd());
+    }
 }

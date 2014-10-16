@@ -38,6 +38,13 @@ abstract class Line
     }
 
     /**
+     * Gets a sort value for the lines of a specific type
+     *
+     * @return float
+     */
+    abstract public function getSortValue();
+
+    /**
      * Get the distance between two lines
      *
      * @param $line Line the line we want to measure the distance with

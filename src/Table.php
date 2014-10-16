@@ -12,5 +12,29 @@ namespace Maximethebault\Pdf2Table;
  */
 class Table
 {
+    /**
+     * The parent page
+     *
+     * @var PdfPage
+     */
+    private $_page;
+    /**
+     * @var TableRow[]
+     */
+    private $_rows;
 
+    /**
+     * @param $page PdfPage the parent page
+     */
+    public function __construct($page) {
+        $this->_page = $page;
+    }
+
+    public function buildTable() {
+        $this->_rows = array();
+        $nbHorizontalLines = count($this->_page->getHorizontalLines());
+        for($i = 0; $i < $nbHorizontalLines; $i++) {
+            $this->_rows[$i] = new TableRow($this);
+        }
+    }
 } 

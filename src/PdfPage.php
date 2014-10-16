@@ -35,10 +35,12 @@ class PdfPage
     }
 
     public function buildTable() {
-        $this->getLines();
-        $this->extendLines($this->_horizontalLines);
-        $this->extendLines($this->_verticalLines);
-        $table = new Table($this->_horizontalLines, $this->_verticalLines);
+        $this->computeLines();
+        $this->expandLines($this->_horizontalLines);
+        $this->expandLines($this->_verticalLines);
+        $this->sortLines($this->_horizontalLines);
+        $this->sortLines($this->_verticalLines);
+        $table = new Table($this);
     }
 
     /**
@@ -63,7 +65,21 @@ class PdfPage
         imagedestroy($gdImage);
     }
 
-    private function getLines() {
+    /**
+     * @return Line[]
+     */
+    public function getHorizontalLines() {
+        return $this->_horizontalLines;
+    }
+
+    /**
+     * @return Line[]
+     */
+    public function getVerticalLines() {
+        return $this->_verticalLines;
+    }
+
+    private function computeLines() {
         foreach($this->_xmlPage->rect as $line) {
             $border = $line->attrs('bbox');
             if(!$border) {
@@ -80,11 +96,11 @@ class PdfPage
     }
 
     /**
-     * Extends a set of lines, i.e. it merges lines which should be considered as one
+     * Expands a set of lines, i.e. it merges lines which should be considered as one
      *
      * @param $lineSet Line[] an array of lines
      */
-    private function extendLines(&$lineSet) {
+    private function expandLines(&$lineSet) {
         do {
             $lineCount = count($lineSet);
             for($i = 0; $i < count($lineSet); $i++) {
@@ -103,6 +119,17 @@ class PdfPage
         // when we unset an element off an array, key still exists and returns null.
         // we need to clean up this mess
         $lineSet = array_values($lineSet);
+    }
+
+    /**
+     * Sorts a set of lines
+     *
+     * @param $lineSet Line[] an array of lines
+     */
+    private function sortLines(&$lineSet) {
+        usort($lineSet, function ($a, $b) {
+            return $a->getSortValue() - $b->getSortValue();
+        });
     }
 
     /**

@@ -7,6 +7,13 @@ class VerticalLine extends Line
     /**
      * @inheritdoc
      */
+    public function getSortValue() {
+        return min($this->_border->getXStart(), $this->_border->getXEnd());
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function distance($line) {
         if($this->_border->getYStart() > $line->_border->getYStart()) {
             if($this->_border->getYStart() < $line->_border->getYEnd()) {
