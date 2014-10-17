@@ -25,9 +25,90 @@ class Border
             throw new MissingDimensionException;
         }
         $this->_xStart = (float) $dims[0];
-        $this->_yStart = ($pageDimension != null) ? ($pageDimension->getHeight() - (float) $dims[1]) : (float) $dims[1];
+        // when we're doing a substraction, pay attention to the order:
+        // yStart should be inferior to yEnd
+        $this->_yStart = ($pageDimension != null) ? ($pageDimension->getHeight() - (float) $dims[3]) : (float) $dims[1];
         $this->_xEnd = (float) $dims[2];
-        $this->_yEnd = ($pageDimension != null) ? ($pageDimension->getHeight() - (float) $dims[3]) : (float) $dims[3];
+        $this->_yEnd = ($pageDimension != null) ? ($pageDimension->getHeight() - (float) $dims[1]) : (float) $dims[3];
+    }
+
+    /**
+     * When two borders are side by side, they share one of their borders
+     * Let's find it!
+     *
+     * @param $border Border the Border to compute the intersecting line with
+     *
+     * @return Line the intersecting line if one was found, null otherwise
+     */
+    public function getIntersectingLine($border) {
+        if($this->getTopLine()->equals($border->getBottomLine())) {
+            return $this->getTopLine();
+        }
+        elseif($this->getBottomLine()->equals($border->getTopLine())) {
+            return $this->getBottomLine();
+        }
+        elseif($this->getLeftLine()->equals($border->getRightLine())) {
+            return $this->getLeftLine();
+        }
+        elseif($this->getRightLine()->equals($border->getLeftLine())) {
+            return $this->getRightLine();
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Merges two borders together
+     *
+     * @param $border Border the Border to be merged into the current one
+     */
+    public function merge($border) {
+        if($this->getTopLine()->equals($border->getBottomLine()) || $this->getLeftLine()->equals($border->getRightLine())) {
+            $this->setXStart($border->getXStart());
+            $this->setYStart($border->getYStart());
+        }
+        elseif($this->getBottomLine()->equals($border->getTopLine()) || $this->getRightLine()->equals($border->getLeftLine())) {
+            $this->setXEnd($border->getXEnd());
+            $this->setYEnd($border->getYEnd());
+        }
+    }
+
+    /**
+     * @return HorizontalLine
+     */
+    public function getTopLine() {
+        return new HorizontalLine(new Border($this->getXStart() . ',' . $this->getYStart() . ',' . $this->getXEnd() . ',' . $this->getYStart()));
+    }
+
+    /**
+     * @return HorizontalLine
+     */
+    public function getBottomLine() {
+        return new HorizontalLine(new Border($this->getXStart() . ',' . $this->getYEnd() . ',' . $this->getXEnd() . ',' . $this->getYEnd()));
+    }
+
+    /**
+     * @return VerticalLine
+     */
+    public function getLeftLine() {
+        return new VerticalLine(new Border($this->getXStart() . ',' . $this->getYStart() . ',' . $this->getXStart() . ',' . $this->getYEnd()));
+    }
+
+    /**
+     * @return VerticalLine
+     */
+    public function getRightLine() {
+        return new VerticalLine(new Border($this->getXEnd() . ',' . $this->getYStart() . ',' . $this->getXEnd() . ',' . $this->getYEnd()));
+    }
+
+    /**
+     * @param $border Border
+     *
+     * @return bool
+     */
+    public function equals($border) {
+        return abs($this->getXStart() - $border->getXStart()) < 1 && abs($this->getXEnd() - $border->getXEnd()) < 1 && abs($this->getYStart() - $border->getYStart()) < 1 && abs($this->getYEnd() - $border->getYEnd()) < 1;
     }
 
     /**

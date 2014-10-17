@@ -24,23 +24,27 @@ class PdfPage
      * @var Line[]
      */
     private $_horizontalLines, $_verticalLines;
+    /**
+     * Object holding the table & its cells
+     *
+     * @var Table
+     */
+    private $_table;
 
     /**
      * @param $xmlPage XmlElements\Page a XML representation of this PDF page
      */
     public function __construct($xmlPage) {
         $this->_xmlPage = $xmlPage;
-        $this->_horizontalLines[] = array();
-        $this->_verticalLines[] = array();
+        $this->_horizontalLines = array();
+        $this->_verticalLines = array();
     }
 
-    public function buildTable() {
-        $this->computeLines();
-        $this->expandLines($this->_horizontalLines);
-        $this->expandLines($this->_verticalLines);
-        $this->sortLines($this->_horizontalLines);
-        $this->sortLines($this->_verticalLines);
-        $table = new Table($this);
+    public function getTable() {
+        if(!$this->_table) {
+            $this->buildTable();
+        }
+        return $this->_table;
     }
 
     /**
@@ -53,11 +57,7 @@ class PdfPage
      * @throws Exception\MissingDimensionException
      */
     public function drawPage($outFile) {
-        if(($dims = $this->_xmlPage->attrs('bbox')) == null) {
-            throw new MissingDimensionException();
-        }
-        $this->_pageDims = new Border($dims);
-        $gdImage = imagecreatetruecolor($this->_pageDims->getWidth(), $this->_pageDims->getHeight());
+        $gdImage = imagecreatetruecolor($this->getPageDims()->getWidth(), $this->getPageDims()->getHeight());
 
         $this->drawRecursive($gdImage, $this->_xmlPage);
 
@@ -79,13 +79,39 @@ class PdfPage
         return $this->_verticalLines;
     }
 
+    /**
+     * @return Border
+     */
+    public function getPageDims() {
+        if(!$this->_pageDims) {
+            $this->fillDims();
+        }
+        return $this->_pageDims;
+    }
+
+    private function fillDims() {
+        if(($dims = $this->_xmlPage->attrs('bbox')) == null) {
+            throw new MissingDimensionException();
+        }
+        $this->_pageDims = new Border($dims);
+    }
+
+    private function buildTable() {
+        $this->computeLines();
+        $this->expandLines($this->_horizontalLines);
+        $this->expandLines($this->_verticalLines);
+        $this->sortLines($this->_horizontalLines);
+        $this->sortLines($this->_verticalLines);
+        $this->_table = new Table($this);
+    }
+
     private function computeLines() {
         foreach($this->_xmlPage->rect as $line) {
             $border = $line->attrs('bbox');
             if(!$border) {
                 continue;
             }
-            $border = new Border($border);
+            $border = new Border($border, $this->getPageDims());
             if($border->isHorizontal()) {
                 $this->_horizontalLines[] = new HorizontalLine($border);
             }
@@ -101,24 +127,26 @@ class PdfPage
      * @param $lineSet Line[] an array of lines
      */
     private function expandLines(&$lineSet) {
+        // this "algorithm" is absolutely unoptimized
         do {
             $lineCount = count($lineSet);
-            for($i = 0; $i < count($lineSet); $i++) {
+            for($i = 0; $i < $lineCount; $i++) {
                 $line1 = $lineSet[$i];
-                for($j = 0; $j < count($lineSet); $j++) {
+                for($j = $i + 1; $j < $lineCount; $j++) {
                     $line2 = $lineSet[$j];
                     if(!$line1 || !$line2) {
                         continue;
                     }
                     if($line1->glue($line2)) {
                         unset($lineSet[$j]);
+                        break 2;
                     }
                 }
             }
+            // when we unset an element off an array, key still exists and returns null.
+            // we need to clean up this mess
+            $lineSet = array_values($lineSet);
         } while($lineCount != count($lineSet));
-        // when we unset an element off an array, key still exists and returns null.
-        // we need to clean up this mess
-        $lineSet = array_values($lineSet);
     }
 
     /**
@@ -128,7 +156,7 @@ class PdfPage
      */
     private function sortLines(&$lineSet) {
         usort($lineSet, function ($a, $b) {
-            return $a->getSortValue() - $b->getSortValue();
+            return $a->getLevel() - $b->getLevel();
         });
     }
 

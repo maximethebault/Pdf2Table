@@ -28,7 +28,7 @@ abstract class Line
      * @return bool true if the lines were glued together
      */
     public function glue($line) {
-        if($this->distance($line) < 2) {
+        if(abs($this->getLevel() - $line->getLevel()) < 2 && $this->distance($line) < 2) {
             $this->merge($line);
             return true;
         }
@@ -38,11 +38,79 @@ abstract class Line
     }
 
     /**
-     * Gets a sort value for the lines of a specific type
+     * @return bool
+     */
+    public function isHorizontal() {
+        return $this->_border->isHorizontal();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVertical() {
+        return $this->_border->isVertical();
+    }
+
+    /**
+     * Checks if current line is included in given line
+     *
+     * @param $biggerLine Line the bigger line of the two to perform the inclusion check
+     *
+     * @return bool
+     */
+    public function isIncluded($biggerLine) {
+        if($this->isHorizontal() != $biggerLine->isHorizontal()) {
+            return false;
+        }
+        if(abs($this->getLevel() - $biggerLine->getLevel()) > 1) {
+            return false;
+        }
+        // 2 as a security margin
+        if($this->getStartPoint() < $biggerLine->getStartPoint() - 2) {
+            return false;
+        }
+        if($this->getEndPoint() > $biggerLine->getEndPoint() + 2) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param $line Line
+     *
+     * @return bool
+     */
+    public function equals($line) {
+        return ($this->_border->equals($line->_border));
+    }
+
+    /**
+     * Gets the "level" of a line
+     * A level is defined as the constant parameter of the line
+     * For horizontal lines, it's the y value
+     * For vertical lines, it's the x value
      *
      * @return float
      */
-    abstract public function getSortValue();
+    abstract public function getLevel();
+
+    /**
+     * Gets the starting point for the line
+     *
+     * E.g.: For horizontal lines, it's xStart
+     *
+     * @return float
+     */
+    abstract public function getStartPoint();
+
+    /**
+     * Gets the ending point for the line
+     *
+     * E.g.: For horizontal lines, it's xEnd
+     *
+     * @return float
+     */
+    abstract public function getEndPoint();
 
     /**
      * Get the distance between two lines
