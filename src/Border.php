@@ -64,14 +64,10 @@ class Border
      * @param $border Border the Border to be merged into the current one
      */
     public function merge($border) {
-        if($this->getTopLine()->equals($border->getBottomLine()) || $this->getLeftLine()->equals($border->getRightLine())) {
-            $this->setXStart($border->getXStart());
-            $this->setYStart($border->getYStart());
-        }
-        elseif($this->getBottomLine()->equals($border->getTopLine()) || $this->getRightLine()->equals($border->getLeftLine())) {
-            $this->setXEnd($border->getXEnd());
-            $this->setYEnd($border->getYEnd());
-        }
+        $this->setXStart(min($this->getXStart(), $border->getXStart()));
+        $this->setYStart(min($this->getYStart(), $border->getYStart()));
+        $this->setXEnd(max($this->getXEnd(), $border->getXEnd()));
+        $this->setYEnd(max($this->getYEnd(), $border->getYEnd()));
     }
 
     /**
@@ -209,5 +205,40 @@ class Border
      */
     public function setYEnd($yEnd) {
         $this->_yEnd = $yEnd;
+    }
+
+    /**
+     * Determines how much of $textBorder is covered by $this (0 to 100%)
+     *
+     * @param $border Border the other Border
+     *
+     * @return int percent, between 0 and 100
+     */
+    public function coveringPercent($border) {
+        $common = $this->getCommonBorder($border);
+        if(!$common) {
+            return 0;
+        }
+        $commonSurface = $common->getWidth() * $common->getHeight();
+        $totalSurface = $border->getWidth() * $border->getHeight();
+        return (int) ($commonSurface / $totalSurface * 100);
+    }
+
+    /**
+     *
+     *
+     * @param $border Border
+     *
+     * @return Border the common border
+     */
+    private function getCommonBorder($border) {
+        $xStart = max($this->getXStart(), $border->getXStart());
+        $yStart = max($this->getYStart(), $border->getYStart());
+        $xEnd = min($this->getXEnd(), $border->getXEnd());
+        $yEnd = min($this->getYEnd(), $border->getYEnd());
+        if($xEnd < $xStart || $yEnd < $yStart) {
+            return null;
+        }
+        return new Border($xStart . ',' . $yStart . ',' . $xEnd . ',' . $yEnd);
     }
 }

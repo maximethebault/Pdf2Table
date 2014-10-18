@@ -20,6 +20,10 @@ class TableCell
      * @var Border
      */
     private $_border;
+    /**
+     * @var string[]
+     */
+    private $_text;
 
     /**
      * Constructs a table cell from its parent table and its borders
@@ -30,6 +34,7 @@ class TableCell
     public function __construct($parentTable, $borders) {
         $this->_parentTable = $parentTable;
         $this->_border = $borders;
+        $this->_text = array();
     }
 
     /**
@@ -54,6 +59,17 @@ class TableCell
      */
     public function getBorder() {
         return $this->_border;
+    }
+
+    public function addText($text) {
+        $this->_text[] = $text;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getText() {
+        return $this->_text;
     }
 
     /**

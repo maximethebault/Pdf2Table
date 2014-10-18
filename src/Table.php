@@ -109,6 +109,38 @@ class Table
         imagedestroy($gdImage);
     }
 
+    private function distributeTextlines() {
+        foreach($this->_page->textbox as $textbox) {
+            foreach($textbox->textline as $textline) {
+                $textBorder = $textline->getTextBorder($this->_page->getPageDims());
+                if(!$textBorder) {
+                    continue;
+                }
+                $coverings = array();
+
+                for($i = 0; $i < count($this->_cells); $i++) {
+                    /** @noinspection PhpParamsInspection */
+                    for($j = 0; $j < count($this->_cells[0]); $j++) {
+                        /** @var $cell TableCell */
+                        $cell = $this->_cells[$i][$j];
+                        $percent = $cell->getBorder()->coveringPercent($textBorder);
+                        if($percent >= 50) {
+                            $cell->addText($textline->getText($this->_page->getPageDims()));
+                            continue 3;
+                        }
+                        else {
+                            $coverings[$percent] = $cell;
+                        }
+                    }
+                }
+                krsort($coverings, SORT_NUMERIC);
+                /** @var $winner TableCell */
+                $winner = array_shift($coverings);
+                $winner->addText($textline->getText($this->_page->getPageDims()));
+            }
+        }
+    }
+
     private function buildTable() {
         $this->_cells = array();
         $nbHorizontalLines = count($this->_horizontalLineGroup);
@@ -132,6 +164,7 @@ class Table
             $yStartPoint = $yEndPoint;
         }
         $this->runMergeAlgorithm();
+        $this->distributeTextlines();
     }
 
     /**
