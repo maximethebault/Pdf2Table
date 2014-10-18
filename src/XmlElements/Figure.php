@@ -5,7 +5,7 @@ namespace Maximethebault\Pdf2Table\XmlElements;
 use Maximethebault\XmlParser\XmlElement;
 
 /**
- * @property XmlElement   image
+ * @property Image   image
  */
 class Figure extends XmlElement
 {

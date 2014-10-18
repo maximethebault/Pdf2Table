@@ -5,7 +5,7 @@ namespace Maximethebault\Pdf2Table\XmlElements;
 use Maximethebault\XmlParser\XmlRootElement;
 
 /**
- * @property \Maximethebault\XmlParser\XmlElement[] page
+ * @property Page[] page
  */
 class Pages extends XmlRootElement
 {

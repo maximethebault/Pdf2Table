@@ -2,6 +2,7 @@ language: php
 php:
   - 5.4
 before_script:
+  - sudo pip install pdfminer
   - composer selfupdate
   - composer install
 script:

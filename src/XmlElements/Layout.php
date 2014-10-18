@@ -5,7 +5,7 @@ namespace Maximethebault\Pdf2Table\XmlElements;
 use Maximethebault\XmlParser\XmlElement;
 
 /**
- * @property XmlElement   textgroup
+ * @property Textgroup   textgroup
  */
 class Layout extends XmlElement
 {

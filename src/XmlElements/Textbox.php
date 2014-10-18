@@ -5,7 +5,7 @@ namespace Maximethebault\Pdf2Table\XmlElements;
 use Maximethebault\XmlParser\XmlElement;
 
 /**
- * @property XmlElement[] textline
+ * @property Textline[] textline
  */
 class Textbox extends XmlElement
 {

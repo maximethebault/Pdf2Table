@@ -11,10 +11,10 @@ use Maximethebault\Pdf2Table\VerticalLine;
 use Maximethebault\XmlParser\XmlElement;
 
 /**
- * @property XmlElement[] textbox
- * @property XmlElement[] figure
- * @property XmlElement[] rect
- * @property XmlElement   layout
+ * @property Textbox[] textbox
+ * @property Figure[]  figure
+ * @property Rect[]    rect
+ * @property Layout    layout
  */
 class Page extends XmlElement
 {
