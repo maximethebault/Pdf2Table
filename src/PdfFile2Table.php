@@ -20,9 +20,9 @@ class PdfFile2Table
      */
     private $_filePath;
     /**
-     * Array of the PDF pages
+     * The root element of the XML representation of the PDF
      *
-     * @var PdfPage[]
+     * @var XmlElements\Pages
      */
     private $_pages;
 
@@ -40,7 +40,7 @@ class PdfFile2Table
         $xmlConfig->addXmlElementFolder('XmlElements/', 'Maximethebault\Pdf2Table\XmlElements');
         $xmlFileParser = new XmlFileParser($xmlUniqueName, $xmlConfig, new Pages());
         $xmlRes = $xmlFileParser->parseFile();
-        $this->registerPages($xmlRes);
+        $this->_pages = $xmlRes;
         unlink($xmlUniqueName);
         return $this;
     }
@@ -48,20 +48,9 @@ class PdfFile2Table
     /**
      * Gets the array of PDF pages
      *
-     * @return PdfPage[]
+     * @return XmlElements\Page[]
      */
     public function getPages() {
-        return $this->_pages;
-    }
-
-    /**
-     * Puts the pages found in the XML tree into the internal array
-     *
-     * @param $xmlRes \Maximethebault\XmlParser\XmlElement
-     */
-    private function registerPages($xmlRes) {
-        foreach($xmlRes->page as $page) {
-            $this->_pages[] = new PdfPage($page);
-        }
+        return $this->_pages->page;
     }
 }
