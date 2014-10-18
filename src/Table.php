@@ -15,7 +15,7 @@ class Table
     /**
      * The parent page
      *
-     * @var PdfPage
+     * @var XmlElements\Page
      */
     private $_page;
     /**
@@ -42,7 +42,7 @@ class Table
     private $_nbCells;
 
     /**
-     * @param $page PdfPage the parent page
+     * @param $page XmlElements\Page the parent page
      */
     public function __construct($page) {
         $this->_page = $page;
