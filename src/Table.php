@@ -178,7 +178,7 @@ class Table
         /** @noinspection PhpParamsInspection */
         $colCount = count($this->_cells[0]);
         do {
-            $nbCellsBeginningIteration = $this->_nbCells;
+            $nbCellsItStart = $this->_nbCells;
             if($colCount > 1) {
                 for($i = 0; $i < $rowCount; $i++) {
                     /** @var $lastCell TableCell */
@@ -211,7 +211,7 @@ class Table
                     }
                 }
             }
-        } while($this->_nbCells != $nbCellsBeginningIteration);
+        } while($this->_nbCells != $nbCellsItStart);
     }
 
     /**
