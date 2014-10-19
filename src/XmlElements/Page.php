@@ -170,8 +170,9 @@ class Page extends XmlElement
      * @param $lineSet ..\Line[] an array of lines
      */
     private function sortLines(&$lineSet) {
-        usort($lineSet, function ($a, $b) {
-            return $a->getLevel() - $b->getLevel();
+        usort($lineSet, function ($line1, $line2) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            return $line1->getLevel() - $line2->getLevel();
         });
     }
 
