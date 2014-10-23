@@ -30,11 +30,23 @@ class PdfFile2Table
         $this->_filePath = $filePath;
     }
 
-    public function parse() {
+    /**
+     * Starts the parsing of the PDF
+     *
+     * @param $tempPath string the path used to store the temporary file (don't forget the trailing slash!)
+     *
+     * @return $this
+     *
+     * @throws Exception\FileNotFoundException
+     */
+    public function parse($tempPath = null) {
         if(!file_exists($this->_filePath)) {
             throw new Exception\FileNotFoundException('PDF file on input of PdfFile2Table not found : ' . $this->_filePath . '.');
         }
-        $xmlUniqueName = uniqid() . '.xml';
+        if(!$tempPath) {
+            $tempPath = __DIR__ . '/../';
+        }
+        $xmlUniqueName = $tempPath . uniqid() . '.xml';
         exec('pdf2txt.py -o ' . $xmlUniqueName . ' ' . $this->_filePath);
         $xmlConfig = new XmlParserConfig();
         $xmlConfig->addXmlElementFolder('XmlElements/', 'Maximethebault\Pdf2Table\XmlElements');
