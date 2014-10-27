@@ -2,3 +2,5 @@ Pdf2Table.iml
 .idea
 vendor
 composer.lock
+tmp
+!tmp/README.md
