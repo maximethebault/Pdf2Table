@@ -13,6 +13,8 @@ class PdfFile2TableTest extends \PHPUnit_Framework_TestCase
         $this->_pdfFile->parse();
         $this->_pdfFile2 = new PdfFile2Table(__DIR__ . "/Res/menu42.pdf");
         $this->_pdfFile2->parse();
+        $this->_pdfFile3 = new PdfFile2Table(__DIR__ . "/Res/menu43.pdf");
+        $this->_pdfFile3->parse();
     }
 
     public function testSpanned() {
@@ -45,5 +47,11 @@ class PdfFile2TableTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("Déjeuner", $table->getCell(0, 1)->getTextline()[0]->getText());
         $this->assertEquals("Dîner", $table->getCell(0, 3)->getTextline()[0]->getText());
         $this->assertEquals("Lundi 13", $table->getCell(1, 0)->getTextline()[0]->getText());
+    }
+
+    public function testBigText() {
+        $page = $this->_pdfFile3->getPages()[0];
+        $table = $page->getTable();
+        $this->assertEquals("REPAS FROIDS", $table->getCell(5, 3)->getText()[0]);
     }
 }
