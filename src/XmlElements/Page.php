@@ -187,7 +187,7 @@ class Page extends XmlElement
      * @throws ..\Exception\MissingDimensionException
      */
     private function drawElement($gdImage, $xmlElement) {
-        if(($dims = $xmlElement->attrs('bbox')) == null || $xmlElement->getName() != 'rect') {
+        if(($dims = $xmlElement->attrs('bbox')) == null) {
             return;
         }
         $dims = new Border($dims, $this->_pageDims);

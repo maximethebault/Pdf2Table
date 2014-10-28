@@ -109,6 +109,13 @@ class Table
         imagedestroy($gdImage);
     }
 
+    /**
+     * @return Border
+     */
+    public function getPageDims() {
+        return $this->_page->getPageDims();
+    }
+
     private function distributeTextlines() {
         foreach($this->_page->textbox as $textbox) {
             foreach($textbox->textline as $textline) {
@@ -125,7 +132,7 @@ class Table
                         $cell = $this->_cells[$i][$j];
                         $percent = $cell->getBorder()->coveringPercent($textBorder);
                         if($percent >= 50) {
-                            $cell->addText($textline->getText($this->_page->getPageDims()));
+                            $cell->addTextline($textline);
                             continue 3;
                         }
                         else {
@@ -136,7 +143,7 @@ class Table
                 krsort($coverings, SORT_NUMERIC);
                 /** @var $winner TableCell */
                 $winner = array_shift($coverings);
-                $winner->addText($textline->getText($this->_page->getPageDims()));
+                $winner->addTextline($textline);
             }
         }
     }
