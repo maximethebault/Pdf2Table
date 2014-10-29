@@ -52,6 +52,6 @@ class PdfFile2TableTest extends \PHPUnit_Framework_TestCase
     public function testBigText() {
         $page = $this->_pdfFile3->getPages()[0];
         $table = $page->getTable();
-        $this->assertEquals("REPAS FROIDS", $table->getCell(5, 3)->getText()[0]);
+        $this->assertEquals("REPAS FROIDS", $table->getCell(5, 3)->getTextline()[0]->getText());
     }
 }

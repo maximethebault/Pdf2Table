@@ -109,17 +109,10 @@ class Table
         imagedestroy($gdImage);
     }
 
-    /**
-     * @return Border
-     */
-    public function getPageDims() {
-        return $this->_page->getPageDims();
-    }
-
     private function distributeTextlines() {
         foreach($this->_page->textbox as $textbox) {
             foreach($textbox->textline as $textline) {
-                $textBorder = $textline->getTextBorder($this->_page->getPageDims());
+                $textBorder = $textline->getTextBorder();
                 if(!$textBorder) {
                     continue;
                 }

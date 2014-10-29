@@ -24,12 +24,6 @@ class Page extends XmlElement
                              'layout'  => array('class' => 'Maximethebault\Pdf2Table\XmlElements\Layout'));
 
     /**
-     * The Border for the current page
-     *
-     * @var Border
-     */
-    private $_pageDims;
-    /**
      * Array of horizontal/vertical lines
      *
      * @var Line[]
@@ -96,22 +90,18 @@ class Page extends XmlElement
 
     /**
      * @return Border
+     *
+     * @throws \Maximethebault\Pdf2Table\Exception\MissingDimensionException
      */
     public function getPageDims() {
-        if(!$this->_pageDims) {
-            $this->fillDims();
-        }
-        return $this->_pageDims;
-    }
-
-    private function fillDims() {
         if(($dims = $this->attrs('bbox')) == null) {
             throw new MissingDimensionException();
         }
-        $this->_pageDims = new Border($dims);
+        return new Border($dims);
     }
 
     private function buildTable() {
+        Border::setPageDimension($this->getPageDims());
         $this->computeLines();
         $this->expandLines($this->_horizontalLines);
         $this->expandLines($this->_verticalLines);
@@ -126,7 +116,7 @@ class Page extends XmlElement
             if(!$border) {
                 continue;
             }
-            $border = new Border($border, $this->getPageDims());
+            $border = new Border($border, true);
             if($border->isHorizontal()) {
                 $this->_horizontalLines[] = new HorizontalLine($border);
             }
@@ -190,7 +180,7 @@ class Page extends XmlElement
         if(($dims = $xmlElement->attrs('bbox')) == null) {
             return;
         }
-        $dims = new Border($dims, $this->_pageDims);
+        $dims = new Border($dims, true);
         $white = imagecolorallocate($gdImage, mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
         imagerectangle($gdImage, $dims->getXStart(), $dims->getYStart(), $dims->getXEnd(), $dims->getYEnd(), $white);
     }

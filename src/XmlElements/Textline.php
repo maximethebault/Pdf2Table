@@ -40,10 +40,8 @@ class Textline extends XmlElement
 
     /**
      * Strip all spaces at the beginning and at the end of the textline, and updates the textBorder/textContent accordingly
-     *
-     * @param $relativeBorder Border
      */
-    public function computeText($relativeBorder) {
+    public function computeText() {
         $tempText = '';
         $this->_maxSize = 0;
         /** @var $tempBorder Border */
@@ -59,17 +57,17 @@ class Textline extends XmlElement
                     $this->_maxSize = max($this->_maxSize, $text->attrs('size'));
                 }
                 if($tempBorder == null) {
-                    $tempBorder = new Border($text->attrs('bbox'), $relativeBorder);
+                    $tempBorder = new Border($text->attrs('bbox'), true);
                 }
                 else {
-                    $tempBorder->merge(new Border($text->attrs('bbox'), $relativeBorder));
+                    $tempBorder->merge(new Border($text->attrs('bbox'), true));
                 }
                 $this->_textBorder = $tempBorder;
                 $tempText = '';
             }
             else {
                 if($tempBorder !== null) {
-                    $tempBorder->merge(new Border($text->attrs('bbox'), $relativeBorder));
+                    $tempBorder->merge(new Border($text->attrs('bbox'), true));
                     $tempText = ' ';
                 }
             }
@@ -81,7 +79,7 @@ class Textline extends XmlElement
      */
     public function getText() {
         if(!$this->_textContent) {
-            $this->computeText($this->_parentCell->getPageDims());
+            $this->computeText();
         }
         return $this->_textContent;
     }
@@ -91,7 +89,7 @@ class Textline extends XmlElement
      */
     public function getTextBorder() {
         if(!$this->_textContent) {
-            $this->computeText($this->_parentCell->getPageDims());
+            $this->computeText();
         }
         return $this->_textBorder;
     }
