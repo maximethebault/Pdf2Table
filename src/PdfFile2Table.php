@@ -47,7 +47,7 @@ class PdfFile2Table
             $tempPath = __DIR__ . '/../';
         }
         $xmlUniqueName = $tempPath . uniqid() . '.xml';
-        exec('pdf2txt.py -o ' . $xmlUniqueName . ' ' . $this->_filePath);
+        exec('pdf2txt.py -o ' . escapeshellarg(realpath($xmlUniqueName)) . ' ' . escapeshellarg(realpath($this->_filePath)));
         $xmlConfig = new XmlParserConfig();
         $xmlConfig->addXmlElementFolder('XmlElements/', 'Maximethebault\Pdf2Table\XmlElements');
         $xmlFileParser = new XmlFileParser($xmlUniqueName, $xmlConfig, new Pages());
