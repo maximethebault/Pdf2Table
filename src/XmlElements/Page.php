@@ -103,6 +103,8 @@ class Page extends XmlElement
     private function buildTable() {
         Border::setPageDimension($this->getPageDims());
         $this->computeLines();
+        usort($this->_horizontalLines, array('Maximethebault\Pdf2Table\Line', 'compare'));
+        usort($this->_verticalLines, array('Maximethebault\Pdf2Table\Line', 'compare'));
         $this->expandLines($this->_horizontalLines);
         $this->expandLines($this->_verticalLines);
         $this->sortLines($this->_horizontalLines);
@@ -132,20 +134,18 @@ class Page extends XmlElement
      * @param $lineSet Line[] an array of lines
      */
     private function expandLines(&$lineSet) {
-        // this "algorithm" is absolutely unoptimized
+        if(!count($lineSet)) {
+            return;
+        }
         do {
             $lineCount = count($lineSet);
-            for($i = 0; $i < $lineCount; $i++) {
-                $line1 = $lineSet[$i];
-                for($j = $i + 1; $j < $lineCount; $j++) {
-                    $line2 = $lineSet[$j];
-                    if(!$line1 || !$line2) {
-                        continue;
-                    }
-                    if($line1->glue($line2)) {
-                        unset($lineSet[$j]);
-                        break 2;
-                    }
+            $previousLine = $lineSet[0];
+            for($i = 1; $i < $lineCount; $i++) {
+                if($previousLine->glue($lineSet[$i])) {
+                    unset($lineSet[$i]);
+                }
+                else {
+                    $previousLine = $lineSet[$i];
                 }
             }
             // when we unset an element off an array, key still exists and returns null.
@@ -159,7 +159,8 @@ class Page extends XmlElement
      *
      * @param $lineSet ..\Line[] an array of lines
      */
-    private function sortLines(&$lineSet) {
+    private
+    function sortLines(&$lineSet) {
         usort($lineSet, function ($line1, $line2) {
             /** @noinspection PhpUndefinedMethodInspection */
             return $line1->getLevel() - $line2->getLevel();
@@ -176,7 +177,8 @@ class Page extends XmlElement
      *
      * @throws ..\Exception\MissingDimensionException
      */
-    private function drawElement($gdImage, $xmlElement) {
+    private
+    function drawElement($gdImage, $xmlElement) {
         if(($dims = $xmlElement->attrs('bbox')) == null) {
             return;
         }
@@ -190,7 +192,8 @@ class Page extends XmlElement
      *
      * @param $gdImage    resource the GD Image on which we're drawing
      */
-    private function drawRecursive($gdImage) {
+    private
+    function drawRecursive($gdImage) {
         foreach($this->getChildren() as $elements) {
             if(is_array($elements)) {
                 foreach($elements as $element) {
