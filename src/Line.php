@@ -21,6 +21,16 @@ abstract class Line
     }
 
     /**
+     * @param $line1 Line
+     * @param $line2 Line
+     *
+     * @return int
+     */
+    public static function compare($line1, $line2) {
+        return $line1->getStartPoint() - $line2->getStartPoint();
+    }
+
+    /**
      * Glue two lines together, if they're close enough
      *
      * @param $line Line the line we want to merge with

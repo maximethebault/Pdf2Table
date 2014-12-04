@@ -2,6 +2,8 @@
 
 namespace Maximethebault\Pdf2Table;
 
+use Maximethebault\Pdf2Table\XmlElements\Textline;
+
 /**
  * Class TableCell
  *
@@ -21,9 +23,9 @@ class TableCell
      */
     private $_border;
     /**
-     * @var string[]
+     * @var Textline[]
      */
-    private $_text;
+    private $_textline;
 
     /**
      * Constructs a table cell from its parent table and its borders
@@ -34,7 +36,7 @@ class TableCell
     public function __construct($parentTable, $borders) {
         $this->_parentTable = $parentTable;
         $this->_border = $borders;
-        $this->_text = array();
+        $this->_textline = array();
     }
 
     /**
@@ -57,19 +59,30 @@ class TableCell
     /**
      * @return Border
      */
+    public function getPageDims() {
+        return $this->_parentTable->getPageDims();
+    }
+
+    /**
+     * @return Border
+     */
     public function getBorder() {
         return $this->_border;
     }
 
-    public function addText($text) {
-        $this->_text[] = $text;
+    /**
+     * @param $textline Textline
+     */
+    public function addTextline($textline) {
+        $textline->setParentCell($this);
+        $this->_textline[] = $textline;
     }
 
     /**
-     * @return string[]
+     * @return Textline[]
      */
-    public function getText() {
-        return $this->_text;
+    public function getTextline() {
+        return $this->_textline;
     }
 
     /**

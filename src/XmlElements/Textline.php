@@ -3,6 +3,7 @@
 namespace Maximethebault\Pdf2Table\XmlElements;
 
 use Maximethebault\Pdf2Table\Border;
+use Maximethebault\Pdf2Table\TableCell;
 use Maximethebault\XmlParser\XmlElement;
 
 /**
@@ -21,6 +22,14 @@ class Textline extends XmlElement
      * @var  \Maximethebault\Pdf2Table\Border the border containing this line of text
      */
     private $_textBorder;
+    /**
+     * @var float the size of the biggest character(s) in the text
+     */
+    private $_maxSize;
+    /**
+     * @var TableCell the cell the textline is attached to
+     */
+    private $_parentCell;
 
     /**
      * @return string this element's tag name
@@ -30,10 +39,11 @@ class Textline extends XmlElement
     }
 
     /**
-     * @param $relativeBorder Border
+     * Strip all spaces at the beginning and at the end of the textline, and updates the textBorder/textContent accordingly
      */
-    public function computeText($relativeBorder) {
+    public function computeText() {
         $tempText = '';
+        $this->_maxSize = 0;
         /** @var $tempBorder Border */
         $tempBorder = null;
         foreach($this->text as $text) {
@@ -43,18 +53,21 @@ class Textline extends XmlElement
             }
             if($content !== null && $content !== '') {
                 $this->_textContent .= $tempText . $content;
+                if($text->attrs('size')) {
+                    $this->_maxSize = max($this->_maxSize, $text->attrs('size'));
+                }
                 if($tempBorder == null) {
-                    $tempBorder = new Border($text->attrs('bbox'), $relativeBorder);
+                    $tempBorder = new Border($text->attrs('bbox'), true);
                 }
                 else {
-                    $tempBorder->merge(new Border($text->attrs('bbox'), $relativeBorder));
+                    $tempBorder->merge(new Border($text->attrs('bbox'), true));
                 }
                 $this->_textBorder = $tempBorder;
                 $tempText = '';
             }
             else {
                 if($tempBorder !== null) {
-                    $tempBorder->merge(new Border($text->attrs('bbox'), $relativeBorder));
+                    $tempBorder->merge(new Border($text->attrs('bbox'), true));
                     $tempText = ' ';
                 }
             }
@@ -62,26 +75,44 @@ class Textline extends XmlElement
     }
 
     /**
-     * @param $relativeBorder Border
-     *
      * @return string
      */
-    public function getText($relativeBorder) {
+    public function getText() {
         if(!$this->_textContent) {
-            $this->computeText($relativeBorder);
+            $this->computeText();
         }
         return $this->_textContent;
     }
 
     /**
-     * @param $relativeBorder Border
-     *
      * @return Border
      */
-    public function getTextBorder($relativeBorder) {
+    public function getTextBorder() {
         if(!$this->_textContent) {
-            $this->computeText($relativeBorder);
+            $this->computeText();
         }
         return $this->_textBorder;
+    }
+
+    public function wouldFit($str) {
+        if(!$this->_parentCell) {
+            return true;
+        }
+        $availableSpace = $this->_parentCell->getBorder()->getWidth() - $this->getTextBorder()->getWidth();
+        // strlen + 1 because when we add a word to a line, we also need a space
+        $neededSpace = $this->_maxSize * (strlen($str) + 1);
+        if($availableSpace - $neededSpace > $this->_maxSize * 2) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * @param TableCell $parentCell
+     */
+    public function setParentCell($parentCell) {
+        $this->_parentCell = $parentCell;
     }
 }

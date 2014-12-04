@@ -2,6 +2,8 @@
 
 namespace Maximethebault\Pdf2Table;
 
+use Maximethebault\Pdf2Table\XmlElements\Textline;
+
 /**
  * Class Table
  *
@@ -40,6 +42,12 @@ class Table
      * @var int
      */
     private $_nbCells;
+    /**
+     * Home for textlines not associated with any cell :(
+     *
+     * @var Textline[]
+     */
+    private $_textline;
 
     /**
      * @param $page XmlElements\Page the parent page
@@ -109,10 +117,17 @@ class Table
         imagedestroy($gdImage);
     }
 
+    /**
+     * @return XmlElements\Textline[]
+     */
+    public function getTextline() {
+        return $this->_textline;
+    }
+
     private function distributeTextlines() {
         foreach($this->_page->textbox as $textbox) {
             foreach($textbox->textline as $textline) {
-                $textBorder = $textline->getTextBorder($this->_page->getPageDims());
+                $textBorder = $textline->getTextBorder();
                 if(!$textBorder) {
                     continue;
                 }
@@ -125,18 +140,23 @@ class Table
                         $cell = $this->_cells[$i][$j];
                         $percent = $cell->getBorder()->coveringPercent($textBorder);
                         if($percent >= 50) {
-                            $cell->addText($textline->getText($this->_page->getPageDims()));
+                            $cell->addTextline($textline);
                             continue 3;
                         }
-                        else {
+                        else if($percent != 0) {
                             $coverings[$percent] = $cell;
                         }
                     }
                 }
-                krsort($coverings, SORT_NUMERIC);
-                /** @var $winner TableCell */
-                $winner = array_shift($coverings);
-                $winner->addText($textline->getText($this->_page->getPageDims()));
+                if(count($coverings)) {
+                    krsort($coverings, SORT_NUMERIC);
+                    /** @var $winner TableCell */
+                    $winner = array_shift($coverings);
+                    $winner->addTextline($textline);
+                }
+                else {
+                    $this->_textline[] = $textline;
+                }
             }
         }
     }
@@ -145,7 +165,7 @@ class Table
         $this->_cells = array();
         $nbHorizontalLines = count($this->_horizontalLineGroup);
         $nbVerticalLines = count($this->_verticalLineGroup);
-        $this->_nbCells = $nbHorizontalLines * $nbVerticalLines;
+        $this->_nbCells = ($nbHorizontalLines - 1) * ($nbVerticalLines - 1);
         $horizontalLevels = array_keys($this->_horizontalLineGroup);
         $verticalLevels = array_keys($this->_verticalLineGroup);
         if($this->_nbCells == 0) {

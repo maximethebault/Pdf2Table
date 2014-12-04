@@ -7,6 +7,10 @@ use Maximethebault\Pdf2Table\Exception\MissingDimensionException;
 class Border
 {
     /**
+     * @var Border
+     */
+    static private $pageDimension;
+    /**
      * Coordinates for the dimensions
      *
      * @var float
@@ -15,11 +19,11 @@ class Border
 
     /**
      * @param $str           string the string we're building the Border object from
-     * @param $pageDimension Border necessary to convert the PDF coordinates (which lives in a frame where 0,0 is the bottom left corner) into a frame adpadted to PHP's GD library (0,0 is top left corner)
+     * @param $convertDim    bool whether to convert the PDF coordinates (which lives in a frame where 0,0 is the bottom left corner) into a frame adpadted to PHP's GD library (0,0 is top left corner)
      *
      * @throws Exception\MissingDimensionException
      */
-    public function __construct($str, $pageDimension = null) {
+    public function __construct($str, $convertDim = false) {
         $dims = explode(',', $str);
         if(count($dims) != 4) {
             throw new MissingDimensionException;
@@ -27,9 +31,16 @@ class Border
         $this->_xStart = (float) $dims[0];
         // when we're doing a substraction, pay attention to the order:
         // yStart should be inferior to yEnd
-        $this->_yStart = ($pageDimension != null) ? ($pageDimension->getHeight() - (float) $dims[3]) : (float) $dims[1];
+        $this->_yStart = ($convertDim != null) ? (self::$pageDimension->getHeight() - (float) $dims[3]) : (float) $dims[1];
         $this->_xEnd = (float) $dims[2];
-        $this->_yEnd = ($pageDimension != null) ? ($pageDimension->getHeight() - (float) $dims[1]) : (float) $dims[3];
+        $this->_yEnd = ($convertDim != null) ? (self::$pageDimension->getHeight() - (float) $dims[1]) : (float) $dims[3];
+    }
+
+    /**
+     * @param mixed $pageDimension
+     */
+    public static function setPageDimension($pageDimension) {
+        self::$pageDimension = $pageDimension;
     }
 
     /**

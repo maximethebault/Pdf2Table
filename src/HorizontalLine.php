@@ -4,6 +4,7 @@ namespace Maximethebault\Pdf2Table;
 
 class HorizontalLine extends Line
 {
+
     /**
      * @inheritdoc
      */

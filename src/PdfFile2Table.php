@@ -46,8 +46,9 @@ class PdfFile2Table
         if(!$tempPath) {
             $tempPath = __DIR__ . '/../';
         }
-        $xmlUniqueName = $tempPath . uniqid() . '.xml';
-        exec('pdf2txt.py -o ' . $xmlUniqueName . ' ' . $this->_filePath);
+        // realpath doesn't work with non-existing files...
+        $xmlUniqueName = realpath($tempPath) . '/' . uniqid() . '.xml';
+        exec('pdf2txt.py -o ' . escapeshellarg($xmlUniqueName) . ' ' . escapeshellarg(realpath($this->_filePath)));
         $xmlConfig = new XmlParserConfig();
         $xmlConfig->addXmlElementFolder('XmlElements/', 'Maximethebault\Pdf2Table\XmlElements');
         $xmlFileParser = new XmlFileParser($xmlUniqueName, $xmlConfig, new Pages());

@@ -29,29 +29,29 @@ class PdfFile2TableTest extends \PHPUnit_Framework_TestCase
         $page = $this->_pdfFile->getPages()[0];
         $page->drawPage('menu40.png');
         $table = $page->getTable();
-        $this->assertEquals("40", $table->getCell(0, 0)->getText()[0]);
-        $this->assertEquals("Déjeuner", $table->getCell(0, 1)->getText()[0]);
-        $this->assertEquals("Dîner", $table->getCell(0, 3)->getText()[0]);
-        $this->assertEquals("Lundi 29", $table->getCell(1, 0)->getText()[0]);
-        $this->assertEquals("Feuilleté dubarry", $table->getCell(1, 1)->getText()[0]);
-        $this->assertEquals("Céléri rémoulade", $table->getCell(1, 1)->getText()[1]);
-        $this->assertEquals("Betteraves-maïs", $table->getCell(1, 1)->getText()[2]);
-        $this->assertEquals("Curry d’agneau", $table->getCell(1, 2)->getText()[0]);
+        $this->assertEquals("40", $table->getCell(0, 0)->getTextline()[0]->getText());
+        $this->assertEquals("Déjeuner", $table->getCell(0, 1)->getTextline()[0]->getText());
+        $this->assertEquals("Dîner", $table->getCell(0, 3)->getTextline()[0]->getText());
+        $this->assertEquals("Lundi 29", $table->getCell(1, 0)->getTextline()[0]->getText());
+        $this->assertEquals("Feuilleté dubarry", $table->getCell(1, 1)->getTextline()[0]->getText());
+        $this->assertEquals("Céléri rémoulade", $table->getCell(1, 1)->getTextline()[1]->getText());
+        $this->assertEquals("Betteraves-maïs", $table->getCell(1, 1)->getTextline()[2]->getText());
+        $this->assertEquals("Curry d’agneau", $table->getCell(1, 2)->getTextline()[0]->getText());
     }
 
     public function testTextReadingDiffTable() {
         $page = $this->_pdfFile2->getPages()[0];
         $page->drawPage('menu42.png');
         $table = $page->getTable();
-        $this->assertEquals("42", $table->getCell(0, 0)->getText()[0]);
-        $this->assertEquals("Déjeuner", $table->getCell(0, 1)->getText()[0]);
-        $this->assertEquals("Dîner", $table->getCell(0, 3)->getText()[0]);
-        $this->assertEquals("Lundi 13", $table->getCell(1, 0)->getText()[0]);
+        $this->assertEquals("42", $table->getCell(0, 0)->getTextline()[0]->getText());
+        $this->assertEquals("Déjeuner", $table->getCell(0, 1)->getTextline()[0]->getText());
+        $this->assertEquals("Dîner", $table->getCell(0, 3)->getTextline()[0]->getText());
+        $this->assertEquals("Lundi 13", $table->getCell(1, 0)->getTextline()[0]->getText());
     }
 
     public function testBigText() {
         $page = $this->_pdfFile3->getPages()[0];
         $table = $page->getTable();
-        $this->assertEquals("REPAS FROIDS", $table->getCell(5, 3)->getText()[0]);
+        $this->assertEquals("REPAS FROIDS", $table->getCell(5, 3)->getTextline()[0]->getText());
     }
 }

@@ -24,12 +24,6 @@ class Page extends XmlElement
                              'layout'  => array('class' => 'Maximethebault\Pdf2Table\XmlElements\Layout'));
 
     /**
-     * The Border for the current page
-     *
-     * @var Border
-     */
-    private $_pageDims;
-    /**
      * Array of horizontal/vertical lines
      *
      * @var Line[]
@@ -96,23 +90,21 @@ class Page extends XmlElement
 
     /**
      * @return Border
+     *
+     * @throws \Maximethebault\Pdf2Table\Exception\MissingDimensionException
      */
     public function getPageDims() {
-        if(!$this->_pageDims) {
-            $this->fillDims();
-        }
-        return $this->_pageDims;
-    }
-
-    private function fillDims() {
         if(($dims = $this->attrs('bbox')) == null) {
             throw new MissingDimensionException();
         }
-        $this->_pageDims = new Border($dims);
+        return new Border($dims);
     }
 
     private function buildTable() {
+        Border::setPageDimension($this->getPageDims());
         $this->computeLines();
+        usort($this->_horizontalLines, array('Maximethebault\Pdf2Table\Line', 'compare'));
+        usort($this->_verticalLines, array('Maximethebault\Pdf2Table\Line', 'compare'));
         $this->expandLines($this->_horizontalLines);
         $this->expandLines($this->_verticalLines);
         $this->sortLines($this->_horizontalLines);
@@ -126,7 +118,7 @@ class Page extends XmlElement
             if(!$border) {
                 continue;
             }
-            $border = new Border($border, $this->getPageDims());
+            $border = new Border($border, true);
             if($border->isHorizontal()) {
                 $this->_horizontalLines[] = new HorizontalLine($border);
             }
@@ -142,20 +134,18 @@ class Page extends XmlElement
      * @param $lineSet Line[] an array of lines
      */
     private function expandLines(&$lineSet) {
-        // this "algorithm" is absolutely unoptimized
+        if(!count($lineSet)) {
+            return;
+        }
         do {
             $lineCount = count($lineSet);
-            for($i = 0; $i < $lineCount; $i++) {
-                $line1 = $lineSet[$i];
-                for($j = $i + 1; $j < $lineCount; $j++) {
-                    $line2 = $lineSet[$j];
-                    if(!$line1 || !$line2) {
-                        continue;
-                    }
-                    if($line1->glue($line2)) {
-                        unset($lineSet[$j]);
-                        break 2;
-                    }
+            $previousLine = $lineSet[0];
+            for($i = 1; $i < $lineCount; $i++) {
+                if($previousLine->glue($lineSet[$i])) {
+                    unset($lineSet[$i]);
+                }
+                else {
+                    $previousLine = $lineSet[$i];
                 }
             }
             // when we unset an element off an array, key still exists and returns null.
@@ -169,7 +159,8 @@ class Page extends XmlElement
      *
      * @param $lineSet ..\Line[] an array of lines
      */
-    private function sortLines(&$lineSet) {
+    private
+    function sortLines(&$lineSet) {
         usort($lineSet, function ($line1, $line2) {
             /** @noinspection PhpUndefinedMethodInspection */
             return $line1->getLevel() - $line2->getLevel();
@@ -186,11 +177,12 @@ class Page extends XmlElement
      *
      * @throws ..\Exception\MissingDimensionException
      */
-    private function drawElement($gdImage, $xmlElement) {
-        if(($dims = $xmlElement->attrs('bbox')) == null || $xmlElement->getName() != 'rect') {
+    private
+    function drawElement($gdImage, $xmlElement) {
+        if(($dims = $xmlElement->attrs('bbox')) == null) {
             return;
         }
-        $dims = new Border($dims, $this->_pageDims);
+        $dims = new Border($dims, true);
         $white = imagecolorallocate($gdImage, mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
         imagerectangle($gdImage, $dims->getXStart(), $dims->getYStart(), $dims->getXEnd(), $dims->getYEnd(), $white);
     }
@@ -200,7 +192,8 @@ class Page extends XmlElement
      *
      * @param $gdImage    resource the GD Image on which we're drawing
      */
-    private function drawRecursive($gdImage) {
+    private
+    function drawRecursive($gdImage) {
         foreach($this->getChildren() as $elements) {
             if(is_array($elements)) {
                 foreach($elements as $element) {
