@@ -48,6 +48,7 @@ class PdfFile2Table
         }
         // realpath doesn't work with non-existing files...
         $xmlUniqueName = realpath($tempPath) . '/' . uniqid() . '.xml';
+        // not working? Is pdf2txt.py in the GLOBAL path?? Accessible to the PHP engine??
         exec('pdf2txt.py -o ' . escapeshellarg($xmlUniqueName) . ' ' . escapeshellarg(realpath($this->_filePath)));
         $xmlConfig = new XmlParserConfig();
         $xmlConfig->addXmlElementFolder('XmlElements/', 'Maximethebault\Pdf2Table\XmlElements');
