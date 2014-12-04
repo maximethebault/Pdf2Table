@@ -39,9 +39,69 @@ class Textline extends XmlElement
     }
 
     /**
+     * @return string
+     */
+    public function getText() {
+        if(!$this->_textContent) {
+            $this->computeText();
+        }
+        return $this->_textContent;
+    }
+
+    /**
+     * @return Border
+     */
+    public function getTextBorder() {
+        if(!$this->_textContent) {
+            $this->computeText();
+        }
+        return $this->_textBorder;
+    }
+
+    /**
+     * @return float
+     */
+    public function getMaxCharSize() {
+        if(!$this->_textContent) {
+            // that call is needed to compute the maxSize
+            $this->computeText();
+        }
+        return $this->_maxSize;
+    }
+
+    /**
+     * @return float
+     */
+    public function getParentCellSize() {
+        return $this->_parentCell->getBorder()->getWidth();
+    }
+
+    public function wouldFit($str) {
+        if(!$this->_parentCell) {
+            return true;
+        }
+        $availableSpace = $this->_parentCell->getBorder()->getWidth() - $this->getTextBorder()->getWidth();
+        // strlen + 1 because when we add a word to a line, we also need a space
+        $neededSpace = $this->_maxSize * (strlen($str) + 1);
+        if($availableSpace - $neededSpace > $this->_maxSize * 2) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * @param TableCell $parentCell
+     */
+    public function setParentCell($parentCell) {
+        $this->_parentCell = $parentCell;
+    }
+
+    /**
      * Strip all spaces at the beginning and at the end of the textline, and updates the textBorder/textContent accordingly
      */
-    public function computeText() {
+    private function computeText() {
         $tempText = '';
         $this->_maxSize = 0;
         /** @var $tempBorder Border */
@@ -72,47 +132,5 @@ class Textline extends XmlElement
                 }
             }
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function getText() {
-        if(!$this->_textContent) {
-            $this->computeText();
-        }
-        return $this->_textContent;
-    }
-
-    /**
-     * @return Border
-     */
-    public function getTextBorder() {
-        if(!$this->_textContent) {
-            $this->computeText();
-        }
-        return $this->_textBorder;
-    }
-
-    public function wouldFit($str) {
-        if(!$this->_parentCell) {
-            return true;
-        }
-        $availableSpace = $this->_parentCell->getBorder()->getWidth() - $this->getTextBorder()->getWidth();
-        // strlen + 1 because when we add a word to a line, we also need a space
-        $neededSpace = $this->_maxSize * (strlen($str) + 1);
-        if($availableSpace - $neededSpace > $this->_maxSize * 2) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    /**
-     * @param TableCell $parentCell
-     */
-    public function setParentCell($parentCell) {
-        $this->_parentCell = $parentCell;
     }
 }
